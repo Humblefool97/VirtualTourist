@@ -30,6 +30,8 @@ extension NetworkUtility{
             static let latitiude = "lat"
             static let longitude = "lon"
             static let radius = "radius"
+            static let PhotosPerPage = "per_page"
+            static let Page = "page"
         }
         
         // MARK: Flickr Parameter Values
@@ -40,7 +42,8 @@ extension NetworkUtility{
             static let ResponseFormat = "json"
             static let SafeSearch = "1" /* 1 means "yes" */
             static let NoJsonCallback = "1"
-            static let radius = "10"
+            static let radius = "20"
+            static let photosPerPage = 25
         }
         
         // MARK: Flickr Response Keys
@@ -50,6 +53,7 @@ extension NetworkUtility{
             static let Photo = "photo"
             static let Title = "title"
             static let MediumURL = "url_m"
+            static let Pages = "pages"
         }
         
         // MARK: Flickr Response Values

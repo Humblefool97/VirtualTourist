@@ -12,7 +12,16 @@ class NetworkUtility {
     
     static func getFlickerPhotos(latitude:Double,
                                  longitude:Double,
-                                 completionHandler : @escaping(_ success:Bool ,_ urlList:[String]?,_ errorMessage:String?) -> Void){
+                                 pageNum:Int,
+                                 completionHandler : @escaping(_ success:Bool ,_ photos:Photos?,_ errorMessage:String?) -> Void){
+        var page:Int{
+            if(pageNum != 0){
+                let page = min(pageNum, 2500/Constants.FlickrParameterValues.photosPerPage)
+                return Int(arc4random_uniform(UInt32(page)) + 1)
+            }else{
+                return 1
+            }
+        }
         
         let methodParameters = [Constants.FlickrParameterKeys.Method:Constants.FlickrParameterValues.photoSearchMethod,
                                 Constants.FlickrParameterKeys.Format:Constants.FlickrParameterValues.ResponseFormat,
@@ -22,7 +31,9 @@ class NetworkUtility {
                                 Constants.FlickrParameterKeys.NoJSONCallback:Constants.FlickrParameterValues.NoJsonCallback,
                                 Constants.FlickrParameterKeys.latitiude:"\(latitude)",
             Constants.FlickrParameterKeys.longitude:"\(longitude)",
-            Constants.FlickrParameterKeys.radius:Constants.FlickrParameterValues.radius]
+            Constants.FlickrParameterKeys.radius:Constants.FlickrParameterValues.radius,
+            Constants.FlickrParameterKeys.PhotosPerPage:"\(Constants.FlickrParameterValues.photosPerPage)",
+            Constants.FlickrParameterKeys.Page:"\(page)"]
         
         let url = getUrlFromParameters(methodParameters as [String : AnyObject])
         let session = URLSession.shared
@@ -85,7 +96,8 @@ class NetworkUtility {
                     print(url)
                 }
             }
-            completionHandler(true,urlList,nil)
+            let photosObj = Photos(urlList: urlList, pages: photosDictionary[Constants.FlickrResponseKeys.Pages] as! Int)
+            completionHandler(true,photosObj,nil)
         }
         // start the task!
         task.resume()
@@ -98,7 +110,7 @@ class NetworkUtility {
         components.scheme = Constants.Flickr.apiScheme
         components.host =  Constants.Flickr.apiHost
         components.path = Constants.Flickr.apiPath + (withPathExtension )
-
+        
         components.queryItems = [URLQueryItem]()
         for (key , value) in parameters {
             let queryItem = URLQueryItem(name: key, value: "\(value)")

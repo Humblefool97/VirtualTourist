@@ -110,43 +110,51 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="aFx-gt-nMz"/>
                                 </constraints>
-                                <state key="normal" title="Remove Selected pictures">
+                                <state key="normal" title="NEW COLLECTION">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
+                                <connections>
+                                    <action selector="onFetchNewImage:" destination="Rb8-fr-zE7" eventType="touchUpInside" id="HIl-ca-L9v"/>
+                                </connections>
                             </button>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="iPj-D5-tgr">
                                 <rect key="frame" x="0.0" y="236" width="320" height="287"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="hGn-Bb-Bju">
-                                    <size key="itemSize" width="74" height="69"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="hGn-Bb-Bju">
+                                    <size key="itemSize" width="150" height="149"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="photocell" id="fER-0C-HwO" customClass="PhotoViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="74" height="69"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" reuseIdentifier="photocell" id="fER-0C-HwO" customClass="PhotoViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="150" height="149"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="74" height="69"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="150" height="149"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hhi-xf-Cf9">
-                                                    <rect key="frame" x="0.0" y="0.0" width="74" height="69"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Hhi-xf-Cf9">
+                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="149"/>
+                                                    <color key="backgroundColor" red="0.93725490570000003" green="0.93725490570000003" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </imageView>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="oy5-lY-iAi">
-                                                    <rect key="frame" x="27" y="24.5" width="20" height="20"/>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="wM3-W1-S08">
+                                                    <rect key="frame" x="65" y="64" width="20" height="20"/>
                                                 </activityIndicatorView>
                                             </subviews>
                                         </view>
+                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
-                                            <constraint firstItem="oy5-lY-iAi" firstAttribute="centerX" secondItem="fER-0C-HwO" secondAttribute="centerX" id="dxP-u8-4fC"/>
-                                            <constraint firstItem="oy5-lY-iAi" firstAttribute="centerY" secondItem="fER-0C-HwO" secondAttribute="centerY" id="weh-st-jpV"/>
+                                            <constraint firstAttribute="trailing" secondItem="Hhi-xf-Cf9" secondAttribute="trailing" id="CQE-VJ-PlZ"/>
+                                            <constraint firstItem="Hhi-xf-Cf9" firstAttribute="top" secondItem="fER-0C-HwO" secondAttribute="top" id="Ovl-dU-ubL"/>
+                                            <constraint firstItem="wM3-W1-S08" firstAttribute="centerY" secondItem="fER-0C-HwO" secondAttribute="centerY" id="ZEZ-P1-YZP"/>
+                                            <constraint firstItem="Hhi-xf-Cf9" firstAttribute="leading" secondItem="fER-0C-HwO" secondAttribute="leading" id="aWD-Ev-wn4"/>
+                                            <constraint firstAttribute="bottom" secondItem="Hhi-xf-Cf9" secondAttribute="bottom" id="nlS-3V-KLZ"/>
+                                            <constraint firstItem="wM3-W1-S08" firstAttribute="centerX" secondItem="fER-0C-HwO" secondAttribute="centerX" id="u5J-7g-Tda"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="image" destination="Hhi-xf-Cf9" id="uBI-57-Sqv"/>
-                                            <outlet property="progressIndicator" destination="oy5-lY-iAi" id="stP-nj-J9O"/>
+                                            <outlet property="imageView" destination="Hhi-xf-Cf9" id="uBI-57-Sqv"/>
+                                            <outlet property="progressIndicator" destination="wM3-W1-S08" id="bIc-2b-eqf"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -182,6 +190,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="cHo-17-Eug"/>
                     <connections>
+                        <outlet property="collectionFlowLayout" destination="hGn-Bb-Bju" id="ipg-PM-mPs"/>
                         <outlet property="collectionView" destination="iPj-D5-tgr" id="oxs-vi-GAh"/>
                         <outlet property="emptyScreenLabel" destination="Nti-tb-f96" id="w44-fs-x9p"/>
                         <outlet property="mapView" destination="3af-6o-AyS" id="qKY-nb-vLa"/>

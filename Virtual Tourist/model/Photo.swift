@@ -10,6 +10,15 @@ import Foundation
 import CoreData
 
 public class Photo: NSManagedObject {
-    
+    convenience init(imageUrl: String, forPin: Pin, context: NSManagedObjectContext) {
+        if let ent = NSEntityDescription.entity(forEntityName:"Photo", in: context) {
+            self.init(entity: ent, insertInto: context)
+            self.image = nil
+            self.url = imageUrl
+            self.pin = forPin
+        } else {
+            fatalError("Something went wrong!!")
+        }
+    }
 }
 

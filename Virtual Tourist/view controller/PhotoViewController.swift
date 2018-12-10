@@ -9,7 +9,9 @@
 import UIKit
 import Foundation
 import MapKit
-class PhotoViewController: UIViewController,MKMapViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate {
+import CoreData
+
+class PhotoViewController: UIViewController {
     //MARK: - Properties
     var pin:Pin!
     @IBOutlet weak var mapView: MKMapView!
@@ -19,29 +21,47 @@ class PhotoViewController: UIViewController,MKMapViewDelegate,UICollectionViewDa
     @IBOutlet weak var collectionView: UICollectionView!
     let spacingBetweenItems:CGFloat = 5
     let totalCellCount:Int = 25
+    private let minItemSpacing: CGFloat = 8
+    private let itemWidth: CGFloat      = 100
+    private let headerHeight: CGFloat   = 32
+    var fetchedResultsController:NSFetchedResultsController<Photo>!
+    var totalNumOfPages = 0
+    var itemCount = 0
+    var deletedIndexPath:IndexPath? = nil
+    var isInDeleteMode:Bool = false
     
+    @IBOutlet weak var collectionFlowLayout: UICollectionViewFlowLayout!
     //MARK: - Methods
+    fileprivate func setupFetchResultsController(){
+        let fetchRequest = NSFetchRequest<Photo>(entityName:"Photo")
+        fetchRequest.sortDescriptors = []
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", argumentArray: [pin])
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: DataController.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        do {
+            try fetchedResultsController.performFetch()
+        } catch  {
+            fatalError("The fetch could not be performed: \(error.localizedDescription)")
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupFetchResultsController()
         mapView.delegate = self
         primaryActionButton.isHidden = true
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 20, left: 0, bottom: 10, right: 0)
-        layout.itemSize = CGSize(width: screenWidth/3, height: screenWidth/3)
-        layout.minimumInteritemSpacing = 0
-        layout.minimumLineSpacing = 0
-        collectionView!.collectionViewLayout = layout
-        loadPin()
-        loadImages()
+        updateFlowLayout(view.frame.size)
+        // configureCollectionView()
         collectionView.delegate = self
+        loadPin()
+        if let photos = pin.photo, photos.count == 0 {
+            loadImages()
+        }
     }
     
     private func loadImages(){
-        NetworkUtility.getFlickerPhotos(latitude: pin.latitude, longitude: pin.longitude){(success,urlList,errorMessage) in
+        NetworkUtility.getFlickerPhotos(latitude: pin.latitude, longitude: pin.longitude,pageNum:totalNumOfPages){(success,photos,errorMessage) in
             if success {
-                if let urlList = urlList{
+                if let photosObj = photos , let urlList = photosObj.urlList{
                     if !urlList.isEmpty{
                         for url in urlList{
                             //Save & display
@@ -50,8 +70,9 @@ class PhotoViewController: UIViewController,MKMapViewDelegate,UICollectionViewDa
                         }
                         performUIUpdatesOnMain {
                             if(self.photos.count > 0){
-                                self.collectionView.reloadData()
+                                self.storePhotos()
                                 self.emptyScreenLabel.isHidden = true
+                                self.totalNumOfPages = photosObj.numOfPages
                             }
                         }
                     }else{
@@ -62,8 +83,47 @@ class PhotoViewController: UIViewController,MKMapViewDelegate,UICollectionViewDa
                     }
                 }
             }else{
-                //TODO:Display error message
-                print(errorMessage)
+                print(errorMessage!)
+            }
+        }
+    }
+    
+    private func updateFlowLayout(_ withSize: CGSize) {
+        let landscape = withSize.width > withSize.height
+        let space: CGFloat = landscape ? 5 : 3
+        let items: CGFloat = landscape ? 2 : 3
+        let dimension = (withSize.width - ((items + 1) * space)) / items
+        collectionFlowLayout?.minimumInteritemSpacing = space
+        collectionFlowLayout?.minimumLineSpacing = space
+        collectionFlowLayout?.itemSize = CGSize(width: dimension, height: dimension)
+        collectionFlowLayout?.sectionInset = UIEdgeInsets(top: space, left: space, bottom: space, right: space)
+    }
+    
+    private func storePhotos(){
+        for url in photos {
+            _ = Photo(imageUrl: url, forPin: pin, context: DataController.shared.viewContext)
+            DataController.shared.saveContext()
+        }
+    }
+    
+   public func onCellSelectedForDeleted(at index:IndexPath){
+        deletedIndexPath = index
+        primaryActionButton.setTitle("Remove selected", for:.normal)
+        isInDeleteMode = true
+    }
+    
+    @IBAction func onFetchNewImage(_ sender: UIButton) {
+        if(!isInDeleteMode){
+            loadImages()
+            collectionView.reloadData()
+        }else{
+            if let indexPath = deletedIndexPath {
+                let photoToDelete = fetchedResultsController.object(at: indexPath)
+                DataController.shared.viewContext.delete(photoToDelete)
+                DataController.shared.saveContext()
+                deletedIndexPath = nil
+                isInDeleteMode = false
+                primaryActionButton.setTitle("New Collection", for:.normal)
             }
         }
     }
@@ -72,47 +132,35 @@ class PhotoViewController: UIViewController,MKMapViewDelegate,UICollectionViewDa
         let annotation = MKPointAnnotation()
         annotation.coordinate = coord
         mapView.addAnnotation(annotation)
-        let distance = CLLocationDistance(5000.0)
+        let distance = CLLocationDistance(30000.00)
         let region = MKCoordinateRegionMakeWithDistance(coord, distance, distance)
         self.mapView.setRegion(region, animated: true)
     }
     
-    // MARK: - MKMapViewDelegate
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        let reuseId = "pin"
-        var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
-        if pinView == nil {
-            pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: reuseId)
-            pinView!.canShowCallout = false
-            pinView!.pinTintColor = .red
-            pinView!.animatesDrop = true
-        } else {
-            pinView!.annotation = annotation
-        }
-        return pinView
-    }
-    
-    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {}
-    
-    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {}
-    
-    //MARKL - Collectionview delegate
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photos.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
-        let collectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photocell", for: indexPath) as! PhotoViewCell
-        collectionViewCell.progressIndicator.startAnimating()
-        let urlInString = photos[indexPath.row]
-        if let url = URL(string: urlInString){
-            if let imageData = NSData(contentsOf: url){
-                let image = UIImage(data: imageData as Data)
-                collectionViewCell.image.image = image
-                collectionViewCell.progressIndicator.stopAnimating()
+    //Get the photo object.
+    //Check if the photo already has image,if yes,display
+    //else,add to DB
+    func downloadImage(photoObject:Photo,completionHandler handler: @escaping (_ image: UIImage) -> Void){
+        DispatchQueue.global(qos: .userInitiated).async { () -> Void in
+            if let imageData = photoObject.image{
+                if let image = UIImage(data: Data(referencing: imageData as NSData)){
+                    DispatchQueue.main.async(execute: { () -> Void in
+                        self.emptyScreenLabel.isHidden = true
+                        handler(image)
+                    })
+                }
+            }else{
+                if let photoUrl = photoObject.url{
+                    if let url = URL(string: photoUrl), let imgData = try? Data(contentsOf: url), let img = UIImage(data: imgData) {
+                        photoObject.image = imgData
+                        // all set and done, run the completion closure!
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            DataController.shared.saveContext()
+                            handler(img)
+                        })
+                    }
+                }
             }
         }
-        return collectionViewCell
     }
-    
 }
