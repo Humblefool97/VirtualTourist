@@ -30,6 +30,7 @@ class PhotoViewController: UIViewController {
     var deletedIndexPath:IndexPath? = nil
     var isInDeleteMode:Bool = false
     
+    @IBOutlet weak var loadActivityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var collectionFlowLayout: UICollectionViewFlowLayout!
     //MARK: - Methods
     fileprivate func setupFetchResultsController(){
@@ -46,8 +47,10 @@ class PhotoViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadActivityIndicator.startAnimating()
         setupFetchResultsController()
         mapView.delegate = self
+        self.emptyScreenLabel.isHidden = true
         primaryActionButton.isHidden = true
         configureFlowLayout(view.frame.size)
         // configureCollectionView()
@@ -71,14 +74,16 @@ class PhotoViewController: UIViewController {
                         performUIUpdatesOnMain {
                             if(self.photos.count > 0){
                                 self.storePhotos()
-                                self.emptyScreenLabel.isHidden = true
                                 self.totalNumOfPages = photosObj.numOfPages
+                                self.emptyScreenLabel.isHidden = true
+                                self.loadActivityIndicator.stopAnimating()
                             }
                         }
                     }else{
                         performUIUpdatesOnMain {
                             self.emptyScreenLabel.isHidden = false
                             self.primaryActionButton.isHidden = true
+                            self.loadActivityIndicator.stopAnimating()
                         }
                     }
                 }
@@ -108,8 +113,11 @@ class PhotoViewController: UIViewController {
     
     @IBAction func onFetchNewImage(_ sender: UIButton) {
         if(!isInDeleteMode){
+            for photos in fetchedResultsController.fetchedObjects!{
+                DataController.shared.viewContext.delete(photos)
+                DataController.shared.saveContext()
+            }
             loadImages()
-            collectionView.reloadData()
         }else{
             if let indexPath = deletedIndexPath {
                 let photoToDelete = fetchedResultsController.object(at: indexPath)
@@ -140,6 +148,7 @@ class PhotoViewController: UIViewController {
                 if let image = UIImage(data: Data(referencing: imageData as NSData)){
                     DispatchQueue.main.async(execute: { () -> Void in
                         self.emptyScreenLabel.isHidden = true
+                        self.loadActivityIndicator.stopAnimating()
                         handler(image)
                     })
                 }
@@ -150,6 +159,7 @@ class PhotoViewController: UIViewController {
                         // all set and done, run the completion closure!
                         DispatchQueue.main.async(execute: { () -> Void in
                             DataController.shared.saveContext()
+                            self.loadActivityIndicator.stopAnimating()
                             handler(img)
                         })
                     }

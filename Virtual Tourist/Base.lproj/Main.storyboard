@@ -169,6 +169,9 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="a2D-rf-JrR">
+                                <rect key="frame" x="150" y="274" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -180,9 +183,11 @@
                             <constraint firstItem="iPj-D5-tgr" firstAttribute="top" secondItem="3af-6o-AyS" secondAttribute="bottom" id="Rbo-rf-DlP"/>
                             <constraint firstItem="3af-6o-AyS" firstAttribute="leading" secondItem="TMW-Bj-KMZ" secondAttribute="leading" id="TcG-Re-zd0"/>
                             <constraint firstItem="3af-6o-AyS" firstAttribute="trailing" secondItem="TMW-Bj-KMZ" secondAttribute="trailing" id="UWg-za-c3M"/>
+                            <constraint firstItem="a2D-rf-JrR" firstAttribute="centerY" secondItem="q7j-Xf-ko9" secondAttribute="centerY" id="b8W-aV-F7y"/>
                             <constraint firstItem="TMW-Bj-KMZ" firstAttribute="trailing" secondItem="eeG-Xu-9NA" secondAttribute="trailing" id="hnz-xa-B4O"/>
                             <constraint firstItem="Nti-tb-f96" firstAttribute="centerX" secondItem="q7j-Xf-ko9" secondAttribute="centerX" id="pDg-Ut-J6G"/>
                             <constraint firstItem="iPj-D5-tgr" firstAttribute="top" secondItem="3af-6o-AyS" secondAttribute="bottom" id="pPz-15-IdB"/>
+                            <constraint firstItem="a2D-rf-JrR" firstAttribute="centerX" secondItem="q7j-Xf-ko9" secondAttribute="centerX" id="usa-mS-FUA"/>
                             <constraint firstItem="eeG-Xu-9NA" firstAttribute="top" secondItem="iPj-D5-tgr" secondAttribute="bottom" id="y8D-Yo-eqe"/>
                             <constraint firstItem="iPj-D5-tgr" firstAttribute="leading" secondItem="eeG-Xu-9NA" secondAttribute="leading" id="zzz-4E-MoQ"/>
                         </constraints>
@@ -193,6 +198,7 @@
                         <outlet property="collectionFlowLayout" destination="hGn-Bb-Bju" id="ipg-PM-mPs"/>
                         <outlet property="collectionView" destination="iPj-D5-tgr" id="oxs-vi-GAh"/>
                         <outlet property="emptyScreenLabel" destination="Nti-tb-f96" id="w44-fs-x9p"/>
+                        <outlet property="loadActivityIndicator" destination="a2D-rf-JrR" id="mVG-U9-6ZC"/>
                         <outlet property="mapView" destination="3af-6o-AyS" id="qKY-nb-vLa"/>
                         <outlet property="primaryActionButton" destination="eeG-Xu-9NA" id="CUV-vh-BLT"/>
                     </connections>
