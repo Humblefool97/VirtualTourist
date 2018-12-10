@@ -66,7 +66,7 @@ extension PhotoViewController:NSFetchedResultsControllerDelegate,MKMapViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         deletedIndexPath = indexPath
         isInDeleteMode = true
-        primaryActionButton.setTitle("Remove selected", for: .normal)
+        primaryActionButton.setTitle("REMOVE SELECTED", for: .normal)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell{
@@ -74,12 +74,6 @@ extension PhotoViewController:NSFetchedResultsControllerDelegate,MKMapViewDelega
         collectionViewCell.imageView.image  = nil
         collectionViewCell.progressIndicator.startAnimating()
         return collectionViewCell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying: UICollectionViewCell, forItemAt: IndexPath) {
-        if collectionView.cellForItem(at: forItemAt) == nil {
-            return
-        }
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

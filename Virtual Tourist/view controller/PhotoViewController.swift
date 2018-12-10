@@ -49,7 +49,7 @@ class PhotoViewController: UIViewController {
         setupFetchResultsController()
         mapView.delegate = self
         primaryActionButton.isHidden = true
-        updateFlowLayout(view.frame.size)
+        configureFlowLayout(view.frame.size)
         // configureCollectionView()
         collectionView.delegate = self
         loadPin()
@@ -88,15 +88,15 @@ class PhotoViewController: UIViewController {
         }
     }
     
-    private func updateFlowLayout(_ withSize: CGSize) {
-        let landscape = withSize.width > withSize.height
-        let space: CGFloat = landscape ? 5 : 3
-        let items: CGFloat = landscape ? 2 : 3
+    private func configureFlowLayout(_ withSize: CGSize) {
+        let isLandscape = withSize.width > withSize.height
+        let space: CGFloat = isLandscape ? 5 : 3
+        let items: CGFloat = isLandscape ? 2 : 3
         let dimension = (withSize.width - ((items + 1) * space)) / items
+        collectionFlowLayout?.sectionInset = UIEdgeInsets(top: space, left: space, bottom: space, right: space)
         collectionFlowLayout?.minimumInteritemSpacing = space
         collectionFlowLayout?.minimumLineSpacing = space
         collectionFlowLayout?.itemSize = CGSize(width: dimension, height: dimension)
-        collectionFlowLayout?.sectionInset = UIEdgeInsets(top: space, left: space, bottom: space, right: space)
     }
     
     private func storePhotos(){
@@ -104,12 +104,6 @@ class PhotoViewController: UIViewController {
             _ = Photo(imageUrl: url, forPin: pin, context: DataController.shared.viewContext)
             DataController.shared.saveContext()
         }
-    }
-    
-   public func onCellSelectedForDeleted(at index:IndexPath){
-        deletedIndexPath = index
-        primaryActionButton.setTitle("Remove selected", for:.normal)
-        isInDeleteMode = true
     }
     
     @IBAction func onFetchNewImage(_ sender: UIButton) {
@@ -123,7 +117,7 @@ class PhotoViewController: UIViewController {
                 DataController.shared.saveContext()
                 deletedIndexPath = nil
                 isInDeleteMode = false
-                primaryActionButton.setTitle("New Collection", for:.normal)
+                primaryActionButton.setTitle("NEW COLLECTION", for:.normal)
             }
         }
     }
